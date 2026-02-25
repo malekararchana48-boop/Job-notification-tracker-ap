@@ -1,0 +1,56 @@
+.settings__container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.settings__fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-24);
+}
+
+.settings__field-label {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-8);
+}
+
+.settings__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-16);
+}
+
+.settings__option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  cursor: pointer;
+  padding: var(--space-8) 0;
+}
+
+.settings__checkbox,
+.settings__radio {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-accent);
+  cursor: pointer;
+}
+
+.settings__option-label {
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+}
+
+.settings__option:hover .settings__option-label {
+  color: var(--color-text-primary);
+}
+
+@media (max-width: 480px) {
+  .settings__options {
+    flex-direction: column;
+    gap: var(--space-8);
+  }
+}

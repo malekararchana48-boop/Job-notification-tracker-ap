@@ -1,7 +1,7 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { TopBar, Navigation, ProofFooter, type ChecklistItem } from './components/layout';
-import { Dashboard, Saved, Digest, Settings, Proof, NotFound } from './pages';
+import { Landing, Dashboard, Saved, Digest, Settings, Proof, NotFound } from './pages';
 import './App.css';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -40,7 +40,7 @@ function App() {
           path="/"
           element={
             <Layout>
-              <Navigate to="/dashboard" replace />
+              <Landing />
             </Layout>
           }
         />

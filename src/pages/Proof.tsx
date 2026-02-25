@@ -6,7 +6,7 @@ export const Proof: React.FC = () => {
     <div className="page">
       <ContextHeader
         title="Proof"
-        subtitle="This section will be built in the next step."
+        subtitle="Artifact collection and verification workspace."
       />
     </div>
   );

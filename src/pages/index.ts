@@ -1,3 +1,4 @@
+export { Landing } from './Landing';
 export { Dashboard } from './Dashboard';
 export { Saved } from './Saved';
 export { Digest } from './Digest';
