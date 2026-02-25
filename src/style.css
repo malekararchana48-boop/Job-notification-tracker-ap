@@ -1,0 +1,203 @@
+/**
+ * Job Notification App - Design System
+ * Premium SaaS Design Foundation
+ * 
+ * Philosophy: Calm, intentional, coherent, confident
+ * No gradients, no glassmorphism, no neon, no animation noise
+ */
+
+/* ============================================
+   DESIGN TOKENS - CSS Custom Properties
+   ============================================ */
+
+:root {
+  /* Color System - Maximum 4 colors */
+  --color-background: #F7F6F3;
+  --color-text-primary: #111111;
+  --color-accent: #8B0000;
+  --color-border: #E5E4E0;
+  
+  /* Semantic Colors (derived from base palette) */
+  --color-success: #4A6741;
+  --color-success-bg: #F0F4EE;
+  --color-warning: #B8860B;
+  --color-warning-bg: #FDF8E8;
+  --color-error: #8B0000;
+  --color-error-bg: #FDF2F2;
+  
+  /* Text Variations */
+  --color-text-secondary: #555555;
+  --color-text-muted: #888888;
+  --color-text-inverse: #FFFFFF;
+  
+  /* Background Variations */
+  --color-surface: #FFFFFF;
+  --color-surface-hover: #FAFAF8;
+  
+  /* Spacing System - Fixed Scale Only */
+  --space-8: 8px;
+  --space-16: 16px;
+  --space-24: 24px;
+  --space-40: 40px;
+  --space-64: 64px;
+  
+  /* Typography */
+  --font-serif: 'Georgia', 'Times New Roman', serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  
+  /* Font Sizes */
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-lg: 18px;
+  --text-xl: 24px;
+  --text-2xl: 32px;
+  --text-3xl: 40px;
+  --text-4xl: 48px;
+  
+  /* Line Heights */
+  --leading-tight: 1.3;
+  --leading-normal: 1.6;
+  --leading-relaxed: 1.8;
+  
+  /* Border Radius - Consistent everywhere */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  
+  /* Borders */
+  --border-width: 1px;
+  --border-color: var(--color-border);
+  
+  /* Transitions */
+  --transition-fast: 150ms ease-in-out;
+  --transition-normal: 200ms ease-in-out;
+  
+  /* Layout */
+  --max-content-width: 720px;
+  --top-bar-height: 64px;
+  --header-height: auto;
+  --footer-height: auto;
+  
+  /* Shadows - Minimal, subtle only */
+  --shadow-none: none;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================
+   RESET & BASE STYLES
+   ============================================ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: var(--text-base);
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  color: var(--color-text-primary);
+  background-color: var(--color-background);
+  min-height: 100vh;
+}
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  line-height: var(--leading-tight);
+  color: var(--color-text-primary);
+  letter-spacing: -0.02em;
+}
+
+h1 {
+  font-size: var(--text-4xl);
+  margin-bottom: var(--space-24);
+}
+
+h2 {
+  font-size: var(--text-3xl);
+  margin-bottom: var(--space-16);
+}
+
+h3 {
+  font-size: var(--text-2xl);
+  margin-bottom: var(--space-16);
+}
+
+h4 {
+  font-size: var(--text-xl);
+  margin-bottom: var(--space-16);
+}
+
+p {
+  max-width: var(--max-content-width);
+  margin-bottom: var(--space-16);
+  line-height: var(--leading-relaxed);
+}
+
+.text-secondary {
+  color: var(--color-text-secondary);
+}
+
+.text-muted {
+  color: var(--color-text-muted);
+}
+
+.text-small {
+  font-size: var(--text-sm);
+}
+
+.text-large {
+  font-size: var(--text-lg);
+}
+
+/* ============================================
+   LINKS
+   ============================================ */
+
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+  transition: opacity var(--transition-fast);
+}
+
+a:hover {
+  opacity: 0.8;
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Focus styles */
+*:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}

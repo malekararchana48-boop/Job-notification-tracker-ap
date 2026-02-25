@@ -1,0 +1,46 @@
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.status-indicator__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: background-color var(--transition-fast);
+}
+
+.status-indicator__message {
+  font-variant-numeric: tabular-nums;
+}
+
+/* States */
+.status-indicator--idle .status-indicator__dot {
+  background-color: var(--color-text-muted);
+}
+
+.status-indicator--loading .status-indicator__dot {
+  background-color: var(--color-warning);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.status-indicator--success .status-indicator__dot {
+  background-color: var(--color-success);
+}
+
+.status-indicator--error .status-indicator__dot {
+  background-color: var(--color-error);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}

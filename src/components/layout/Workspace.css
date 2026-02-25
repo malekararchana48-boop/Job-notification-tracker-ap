@@ -1,0 +1,32 @@
+.workspace {
+  display: flex;
+  flex: 1;
+  gap: var(--space-24);
+  padding: 0 var(--space-24) var(--space-40);
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.workspace__primary {
+  flex: 0 0 70%;
+  max-width: 70%;
+}
+
+.workspace__secondary {
+  flex: 0 0 30%;
+  max-width: 30%;
+}
+
+/* Responsive: Stack on smaller screens */
+@media (max-width: 1024px) {
+  .workspace {
+    flex-direction: column;
+  }
+
+  .workspace__primary,
+  .workspace__secondary {
+    flex: 1 1 auto;
+    max-width: 100%;
+  }
+}

@@ -1,0 +1,59 @@
+.prompt-box {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.prompt-box__label {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.prompt-box__content {
+  position: relative;
+  background-color: var(--color-background);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--space-16);
+}
+
+.prompt-box__text {
+  margin: 0;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  color: var(--color-text-secondary);
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: var(--space-64);
+}
+
+.prompt-box__copy-btn {
+  position: absolute;
+  top: var(--space-16);
+  right: var(--space-16);
+  padding: var(--space-8) var(--space-16);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  background-color: var(--color-surface);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.prompt-box__copy-btn:hover {
+  background-color: var(--color-surface-hover);
+  border-color: var(--color-text-muted);
+  color: var(--color-text-primary);
+}
+
+.prompt-box__copy-btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
