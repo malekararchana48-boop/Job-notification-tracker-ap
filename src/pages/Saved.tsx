@@ -1,17 +1,20 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { ContextHeader } from '../components/layout';
 import { JobCard, JobModal, EmptyState } from '../components/ui';
-import { jobs, type Job } from '../data/jobs';
+import { jobs } from '../data/jobs';
+import { loadPreferences } from '../data/preferences';
+import { calculateMatchScore, type JobWithScore } from '../utils/matchScore';
 import './Saved.css';
 
 const SAVED_JOBS_KEY = 'jobTracker_savedJobs';
 
 export const Saved: React.FC = () => {
   const [savedJobIds, setSavedJobIds] = useState<string[]>([]);
-  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [selectedJob, setSelectedJob] = useState<JobWithScore | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [hasPreferences, setHasPreferences] = useState(false);
 
-  // Load saved jobs from localStorage on mount
+  // Load saved jobs and preferences from localStorage on mount
   useEffect(() => {
     const saved = localStorage.getItem(SAVED_JOBS_KEY);
     if (saved) {
@@ -21,6 +24,16 @@ export const Saved: React.FC = () => {
         setSavedJobIds([]);
       }
     }
+
+    const prefs = loadPreferences();
+    const hasAny = !!(
+      prefs.roleKeywords ||
+      prefs.preferredLocations.length > 0 ||
+      prefs.preferredMode.length > 0 ||
+      prefs.experienceLevel ||
+      prefs.skills
+    );
+    setHasPreferences(hasAny);
   }, []);
 
   // Save to localStorage whenever savedJobIds changes
@@ -29,31 +42,38 @@ export const Saved: React.FC = () => {
   }, [savedJobIds]);
 
   const savedJobs = useMemo(() => {
-    return jobs.filter((job) => savedJobIds.includes(job.id));
+    const prefs = loadPreferences();
+    return jobs
+      .filter((job) => savedJobIds.includes(job.id))
+      .map((job) => ({
+        ...job,
+        matchScore: calculateMatchScore(job, prefs),
+      }));
   }, [savedJobIds]);
 
-  const handleView = (job: Job) => {
+  const handleView = useCallback((job: JobWithScore) => {
     setSelectedJob(job);
     setIsModalOpen(true);
-  };
+  }, []);
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedJob(null);
   };
 
-  const handleSave = (jobId: string) => {
+  const handleSave = useCallback((jobId: string) => {
     setSavedJobIds((prev) => {
-      if (prev.includes(jobId)) {
-        return prev.filter((id) => id !== jobId);
-      }
-      return [...prev, jobId];
+      const newSaved = prev.includes(jobId)
+        ? prev.filter((id) => id !== jobId)
+        : [...prev, jobId];
+      localStorage.setItem(SAVED_JOBS_KEY, JSON.stringify(newSaved));
+      return newSaved;
     });
-  };
+  }, []);
 
-  const handleApply = (url: string) => {
+  const handleApply = useCallback((url: string) => {
     window.open(url, '_blank', 'noopener,noreferrer');
-  };
+  }, []);
 
   const isJobSaved = (jobId: string) => savedJobIds.includes(jobId);
 
@@ -79,6 +99,7 @@ export const Saved: React.FC = () => {
                   onView={handleView}
                   onSave={handleSave}
                   onApply={handleApply}
+                  showScore={hasPreferences}
                 />
               ))}
             </div>

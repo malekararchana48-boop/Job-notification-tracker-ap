@@ -1,7 +1,9 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { ContextHeader } from '../components/layout';
-import { JobCard, JobModal, FilterBar, EmptyState } from '../components/ui';
-import { jobs, type Job } from '../data/jobs';
+import { JobCard, JobModal, FilterBar, EmptyState, Button } from '../components/ui';
+import { jobs } from '../data/jobs';
+import { loadPreferences } from '../data/preferences';
+import { calculateMatchScore, type JobWithScore } from '../utils/matchScore';
 import type { FilterState } from '../components/ui';
 import './Dashboard.css';
 
@@ -17,11 +19,14 @@ export const Dashboard: React.FC = () => {
     sort: 'latest',
   });
 
-  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [selectedJob, setSelectedJob] = useState<JobWithScore | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [savedJobIds, setSavedJobIds] = useState<string[]>([]);
+  const [showOnlyMatches, setShowOnlyMatches] = useState(false);
+  const [hasPreferences, setHasPreferences] = useState(false);
+  const [minMatchScore, setMinMatchScore] = useState(40);
 
-  // Load saved jobs from localStorage on mount
+  // Load saved jobs and preferences from localStorage on mount
   useEffect(() => {
     const saved = localStorage.getItem(SAVED_JOBS_KEY);
     if (saved) {
@@ -31,6 +36,34 @@ export const Dashboard: React.FC = () => {
         setSavedJobIds([]);
       }
     }
+
+    const prefs = loadPreferences();
+    const hasAnyPreference = !!(
+      prefs.roleKeywords ||
+      prefs.preferredLocations.length > 0 ||
+      prefs.preferredMode.length > 0 ||
+      prefs.experienceLevel ||
+      prefs.skills
+    );
+    setHasPreferences(hasAnyPreference);
+    setMinMatchScore(prefs.minMatchScore);
+
+    // Listen for preference changes from other tabs/pages
+    const handleStorageChange = () => {
+      const updatedPrefs = loadPreferences();
+      const hasAny = !!(
+        updatedPrefs.roleKeywords ||
+        updatedPrefs.preferredLocations.length > 0 ||
+        updatedPrefs.preferredMode.length > 0 ||
+        updatedPrefs.experienceLevel ||
+        updatedPrefs.skills
+      );
+      setHasPreferences(hasAny);
+      setMinMatchScore(updatedPrefs.minMatchScore);
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
   // Save to localStorage whenever savedJobIds changes
@@ -38,8 +71,17 @@ export const Dashboard: React.FC = () => {
     localStorage.setItem(SAVED_JOBS_KEY, JSON.stringify(savedJobIds));
   }, [savedJobIds]);
 
+  // Calculate match scores for all jobs
+  const jobsWithScores = useMemo(() => {
+    const prefs = loadPreferences();
+    return jobs.map((job) => ({
+      ...job,
+      matchScore: calculateMatchScore(job, prefs),
+    }));
+  }, []);
+
   const filteredJobs = useMemo(() => {
-    let result = [...jobs];
+    let result = [...jobsWithScores];
 
     // Keyword filter (title or company)
     if (filters.keyword) {
@@ -71,6 +113,11 @@ export const Dashboard: React.FC = () => {
       result = result.filter((job) => job.source === filters.source);
     }
 
+    // Show only matches toggle
+    if (showOnlyMatches) {
+      result = result.filter((job) => job.matchScore >= minMatchScore);
+    }
+
     // Sort
     switch (filters.sort) {
       case 'latest':
@@ -78,6 +125,9 @@ export const Dashboard: React.FC = () => {
         break;
       case 'oldest':
         result.sort((a, b) => b.postedDaysAgo - a.postedDaysAgo);
+        break;
+      case 'match-score':
+        result.sort((a, b) => b.matchScore - a.matchScore);
         break;
       case 'salary-high':
         // Simple sort by extracting first number from salary range
@@ -101,29 +151,34 @@ export const Dashboard: React.FC = () => {
     }
 
     return result;
-  }, [filters]);
+  }, [filters, jobsWithScores, showOnlyMatches, minMatchScore]);
 
-  const handleView = (job: Job) => {
+  const handleView = useCallback((job: JobWithScore) => {
     setSelectedJob(job);
     setIsModalOpen(true);
-  };
+  }, []);
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedJob(null);
   };
 
-  const handleSave = (jobId: string) => {
+  const handleSave = useCallback((jobId: string) => {
     setSavedJobIds((prev) => {
-      if (prev.includes(jobId)) {
-        return prev.filter((id) => id !== jobId);
-      }
-      return [...prev, jobId];
+      const newSaved = prev.includes(jobId)
+        ? prev.filter((id) => id !== jobId)
+        : [...prev, jobId];
+      localStorage.setItem(SAVED_JOBS_KEY, JSON.stringify(newSaved));
+      return newSaved;
     });
-  };
+  }, []);
 
-  const handleApply = (url: string) => {
+  const handleApply = useCallback((url: string) => {
     window.open(url, '_blank', 'noopener,noreferrer');
+  }, []);
+
+  const handleToggleMatches = () => {
+    setShowOnlyMatches((prev) => !prev);
   };
 
   const isJobSaved = (jobId: string) => savedJobIds.includes(jobId);
@@ -136,7 +191,34 @@ export const Dashboard: React.FC = () => {
       />
 
       <div className="dashboard__container">
+        {/* Preferences Banner */}
+        {!hasPreferences && (
+          <div className="dashboard__banner">
+            <span className="dashboard__banner-text">
+              Set your preferences to activate intelligent matching.
+            </span>
+            <Button variant="primary" size="sm" onClick={() => window.location.href = '/settings'}>
+              Go to Settings
+            </Button>
+          </div>
+        )}
+
         <FilterBar filters={filters} onFilterChange={setFilters} />
+
+        {/* Match Toggle */}
+        <div className="dashboard__toggle">
+          <label className="dashboard__toggle-label">
+            <input
+              type="checkbox"
+              checked={showOnlyMatches}
+              onChange={handleToggleMatches}
+              className="dashboard__toggle-input"
+            />
+            <span className="dashboard__toggle-text">
+              Show only jobs above my threshold ({minMatchScore}%)
+            </span>
+          </label>
+        </div>
 
         {filteredJobs.length > 0 ? (
           <div className="dashboard__jobs">
@@ -152,6 +234,7 @@ export const Dashboard: React.FC = () => {
                   onView={handleView}
                   onSave={handleSave}
                   onApply={handleApply}
+                  showScore={hasPreferences}
                 />
               ))}
             </div>
@@ -159,8 +242,8 @@ export const Dashboard: React.FC = () => {
         ) : (
           <div className="dashboard__empty">
             <EmptyState
-              title="No jobs match your search"
-              description="Try adjusting your filters or search terms to see more results."
+              title="No roles match your criteria"
+              description="Adjust filters or lower your match threshold to see more results."
             />
           </div>
         )}

@@ -22,6 +22,7 @@ const sources = ['All', 'LinkedIn', 'Naukri', 'Indeed'];
 const sortOptions = [
   { value: 'latest', label: 'Latest First' },
   { value: 'oldest', label: 'Oldest First' },
+  { value: 'match-score', label: 'Match Score' },
   { value: 'salary-high', label: 'Salary: High to Low' },
   { value: 'salary-low', label: 'Salary: Low to High' },
 ];

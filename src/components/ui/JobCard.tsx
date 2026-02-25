@@ -1,14 +1,16 @@
 import React from 'react';
 import { Badge, Button } from './index';
-import type { Job } from '../../data/jobs';
+import type { JobWithScore } from '../../utils/matchScore';
+import { getScoreVariant, getScoreLabel } from '../../utils/matchScore';
 import './JobCard.css';
 
 interface JobCardProps {
-  job: Job;
+  job: JobWithScore;
   isSaved: boolean;
-  onView: (job: Job) => void;
+  onView: (job: JobWithScore) => void;
   onSave: (jobId: string) => void;
   onApply: (url: string) => void;
+  showScore?: boolean;
 }
 
 export const JobCard: React.FC<JobCardProps> = ({
@@ -17,6 +19,7 @@ export const JobCard: React.FC<JobCardProps> = ({
   onView,
   onSave,
   onApply,
+  showScore = false,
 }) => {
   const formatPostedTime = (days: number): string => {
     if (days === 0) return 'Today';
@@ -37,6 +40,8 @@ export const JobCard: React.FC<JobCardProps> = ({
     }
   };
 
+  const scoreVariant = getScoreVariant(job.matchScore);
+
   return (
     <div className="job-card">
       <div className="job-card__header">
@@ -44,9 +49,16 @@ export const JobCard: React.FC<JobCardProps> = ({
           <h3 className="job-card__title">{job.title}</h3>
           <span className="job-card__company">{job.company}</span>
         </div>
-        <Badge variant={getSourceVariant(job.source) as 'default' | 'success' | 'warning'}>
-          {job.source}
-        </Badge>
+        <div className="job-card__badges">
+          {showScore && (
+            <Badge variant={scoreVariant}>
+              {job.matchScore}% {getScoreLabel(job.matchScore)}
+            </Badge>
+          )}
+          <Badge variant={getSourceVariant(job.source) as 'default' | 'success' | 'warning'}>
+            {job.source}
+          </Badge>
+        </div>
       </div>
 
       <div className="job-card__details">
