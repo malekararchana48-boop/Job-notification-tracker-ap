@@ -6,3 +6,6 @@ export { StatusIndicator, type StatusState } from './StatusIndicator';
 export { PromptBox } from './PromptBox';
 export { EmptyState } from './EmptyState';
 export { ErrorState } from './ErrorState';
+export { JobCard } from './JobCard';
+export { JobModal } from './JobModal';
+export { FilterBar, type FilterState } from './FilterBar';

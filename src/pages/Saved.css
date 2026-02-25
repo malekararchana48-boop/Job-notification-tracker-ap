@@ -1,0 +1,22 @@
+.saved__container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.saved__count {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-16);
+}
+
+.saved__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: var(--space-24);
+}
+
+@media (max-width: 768px) {
+  .saved__grid {
+    grid-template-columns: 1fr;
+  }
+}
