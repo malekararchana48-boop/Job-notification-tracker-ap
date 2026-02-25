@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { TopBar, Navigation, ProofFooter, type ChecklistItem } from './components/layout';
-import { Landing, Dashboard, Saved, Digest, Settings, Proof, NotFound } from './pages';
+import { Landing, Dashboard, Saved, Digest, Settings, Proof, NotFound, TestChecklist, Ship } from './pages';
 import './App.css';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -81,6 +81,22 @@ function App() {
           element={
             <Layout>
               <Proof />
+            </Layout>
+          }
+        />
+        <Route
+          path="/jt/07-test"
+          element={
+            <Layout>
+              <TestChecklist />
+            </Layout>
+          }
+        />
+        <Route
+          path="/jt/08-ship"
+          element={
+            <Layout>
+              <Ship />
             </Layout>
           }
         />

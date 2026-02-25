@@ -5,3 +5,5 @@ export { Digest } from './Digest';
 export { Settings } from './Settings';
 export { Proof } from './Proof';
 export { NotFound } from './NotFound';
+export { TestChecklist } from './TestChecklist';
+export { Ship } from './Ship';
