@@ -1,0 +1,199 @@
+.digest__container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding-bottom: var(--space-64);
+}
+
+.digest__note {
+  text-align: center;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  font-style: italic;
+  margin-bottom: var(--space-16);
+}
+
+.digest__actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-16);
+  margin-bottom: var(--space-24);
+  flex-wrap: wrap;
+}
+
+.digest__generate {
+  text-align: center;
+  margin-bottom: var(--space-40);
+}
+
+.digest__generate .digest__note {
+  margin-bottom: var(--space-16);
+}
+
+/* Blocking State (No Preferences) */
+.digest__blocking {
+  background-color: var(--color-surface);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-64) var(--space-24);
+  text-align: center;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.digest__blocking-title {
+  font-family: var(--font-serif);
+  font-size: var(--text-2xl);
+  font-weight: 400;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-16) 0;
+}
+
+.digest__blocking-text {
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  line-height: var(--leading-relaxed);
+  margin: 0 0 var(--space-24) 0;
+}
+
+/* Email Style Digest */
+.digest__email {
+  background-color: var(--color-surface);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.digest__email-header {
+  background-color: var(--color-background);
+  padding: var(--space-40) var(--space-24);
+  text-align: center;
+  border-bottom: var(--border-width) solid var(--border-color);
+}
+
+.digest__email-title {
+  font-family: var(--font-serif);
+  font-size: var(--text-2xl);
+  font-weight: 400;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-8) 0;
+  line-height: var(--leading-tight);
+}
+
+.digest__email-date {
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.digest__email-body {
+  padding: var(--space-24);
+}
+
+.digest__job {
+  padding: var(--space-24);
+  border-bottom: var(--border-width) solid var(--border-color);
+}
+
+.digest__job:last-child {
+  border-bottom: none;
+}
+
+.digest__job-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
+  margin-bottom: var(--space-16);
+  flex-wrap: wrap;
+}
+
+.digest__job-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background-color: var(--color-accent);
+  color: var(--color-text-inverse);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.digest__job-title {
+  flex: 1;
+  font-family: var(--font-serif);
+  font-size: var(--text-xl);
+  font-weight: 400;
+  color: var(--color-text-primary);
+  margin: 0;
+  line-height: var(--leading-tight);
+}
+
+.digest__job-details {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-16);
+  margin-bottom: var(--space-16);
+  padding: var(--space-16);
+  background-color: var(--color-background);
+  border-radius: var(--radius-md);
+}
+
+.digest__job-detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.digest__job-label {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+}
+
+.digest__job-value {
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+.digest__email-footer {
+  background-color: var(--color-background);
+  padding: var(--space-24);
+  text-align: center;
+  border-top: var(--border-width) solid var(--border-color);
+}
+
+.digest__email-footer p {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .digest__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .digest__job-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .digest__job-details {
+    grid-template-columns: 1fr;
+  }
+
+  .digest__email-header {
+    padding: var(--space-24) var(--space-16);
+  }
+
+  .digest__email-title {
+    font-size: var(--text-xl);
+  }
+}
