@@ -14,6 +14,7 @@ import {
   type Digest as DigestData,
 } from '../utils/digest';
 import { getScoreVariant } from '../utils/matchScore';
+import { getRecentStatusUpdates, getStatusColor, type StatusUpdate } from '../utils/status';
 import './Digest.css';
 
 export const Digest: React.FC = () => {
@@ -21,6 +22,7 @@ export const Digest: React.FC = () => {
   const [hasPreferences, setHasPreferences] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [statusUpdates, setStatusUpdates] = useState<StatusUpdate[]>([]);
 
   // Check for preferences and existing digest on mount
   useEffect(() => {
@@ -40,6 +42,17 @@ export const Digest: React.FC = () => {
     if (existingDigest) {
       setDigest(existingDigest);
     }
+
+    // Load recent status updates
+    setStatusUpdates(getRecentStatusUpdates(10));
+
+    // Listen for storage changes (status updates from other pages)
+    const handleStorageChange = () => {
+      setStatusUpdates(getRecentStatusUpdates(10));
+    };
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
   const handleGenerate = useCallback(() => {
@@ -51,9 +64,21 @@ export const Digest: React.FC = () => {
       const newDigest = generateDigest(jobs, prefs);
       saveDigest(newDigest);
       setDigest(newDigest);
+      // Refresh status updates
+      setStatusUpdates(getRecentStatusUpdates(10));
       setIsGenerating(false);
     }, 500);
   }, []);
+
+  const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
 
   const handleCopy = useCallback(async () => {
     if (!digest) return;
@@ -271,6 +296,29 @@ export const Digest: React.FC = () => {
             </p>
           </div>
         </div>
+
+        {/* Recent Status Updates Section */}
+        {statusUpdates.length > 0 && (
+          <div className="digest__updates">
+            <h3 className="digest__updates-title">Recent Status Updates</h3>
+            <div className="digest__updates-list">
+              {statusUpdates.map((update) => (
+                <div key={`${update.jobId}-${update.updatedAt}`} className="digest__update">
+                  <div className="digest__update-info">
+                    <span className="digest__update-job">{update.jobTitle}</span>
+                    <span className="digest__update-company">{update.company}</span>
+                  </div>
+                  <div className="digest__update-meta">
+                    <Badge variant={getStatusColor(update.status) as 'default' | 'success' | 'error' | 'warning'}>
+                      {update.status}
+                    </Badge>
+                    <span className="digest__update-date">{formatDate(update.updatedAt)}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

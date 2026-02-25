@@ -1,13 +1,20 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { ContextHeader } from '../components/layout';
-import { JobCard, JobModal, FilterBar, EmptyState, Button } from '../components/ui';
+import { JobCard, JobModal, FilterBar, EmptyState, Button, ToastContainer } from '../components/ui';
+import { useToast } from '../components/ui';
 import { jobs } from '../data/jobs';
 import { loadPreferences } from '../data/preferences';
 import { calculateMatchScore, type JobWithScore } from '../utils/matchScore';
 import type { FilterState } from '../components/ui';
+import type { JobStatus } from '../utils/status';
+import { getJobStatus, saveStatus, addStatusUpdate } from '../utils/status';
 import './Dashboard.css';
 
 const SAVED_JOBS_KEY = 'jobTracker_savedJobs';
+
+// Status store for reactive updates
+let statusListeners: (() => void)[] = [];
+const notifyStatusListeners = () => statusListeners.forEach((cb) => cb());
 
 export const Dashboard: React.FC = () => {
   const [filters, setFilters] = useState<FilterState>({
@@ -17,6 +24,7 @@ export const Dashboard: React.FC = () => {
     experience: 'All',
     source: 'All',
     sort: 'latest',
+    status: 'All',
   });
 
   const [selectedJob, setSelectedJob] = useState<JobWithScore | null>(null);
@@ -25,6 +33,8 @@ export const Dashboard: React.FC = () => {
   const [showOnlyMatches, setShowOnlyMatches] = useState(false);
   const [hasPreferences, setHasPreferences] = useState(false);
   const [minMatchScore, setMinMatchScore] = useState(40);
+  const [statusVersion, setStatusVersion] = useState(0);
+  const { toasts, addToast, removeToast } = useToast();
 
   // Load saved jobs and preferences from localStorage on mount
   useEffect(() => {
@@ -63,13 +73,49 @@ export const Dashboard: React.FC = () => {
     };
 
     window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+
+    // Listen for status changes
+    const handleStatusChange = () => setStatusVersion((v) => v + 1);
+    statusListeners.push(handleStatusChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      statusListeners = statusListeners.filter((cb) => cb !== handleStatusChange);
+    };
   }, []);
 
   // Save to localStorage whenever savedJobIds changes
   useEffect(() => {
     localStorage.setItem(SAVED_JOBS_KEY, JSON.stringify(savedJobIds));
   }, [savedJobIds]);
+
+  const handleStatusChange = useCallback((jobId: string, status: JobStatus) => {
+    const job = jobs.find((j) => j.id === jobId);
+    if (!job) return;
+
+    const prevStatus = getJobStatus(jobId);
+    if (prevStatus === status) return;
+
+    saveStatus(jobId, status);
+
+    // Add to history
+    addStatusUpdate({
+      jobId,
+      jobTitle: job.title,
+      company: job.company,
+      status,
+      updatedAt: new Date().toISOString(),
+    });
+
+    // Show toast for Applied, Rejected, Selected
+    if (status !== 'Not Applied') {
+      addToast(`Status updated: ${status}`, 'success');
+    }
+
+    // Trigger re-render
+    setStatusVersion((v) => v + 1);
+    notifyStatusListeners();
+  }, [addToast]);
 
   // Calculate match scores for all jobs
   const jobsWithScores = useMemo(() => {
@@ -78,7 +124,7 @@ export const Dashboard: React.FC = () => {
       ...job,
       matchScore: calculateMatchScore(job, prefs),
     }));
-  }, []);
+  }, [statusVersion]);
 
   const filteredJobs = useMemo(() => {
     let result = [...jobsWithScores];
@@ -111,6 +157,11 @@ export const Dashboard: React.FC = () => {
     // Source filter
     if (filters.source !== 'All') {
       result = result.filter((job) => job.source === filters.source);
+    }
+
+    // Status filter (AND logic with all other filters)
+    if (filters.status !== 'All') {
+      result = result.filter((job) => getJobStatus(job.id) === filters.status);
     }
 
     // Show only matches toggle
@@ -231,9 +282,11 @@ export const Dashboard: React.FC = () => {
                   key={job.id}
                   job={job}
                   isSaved={isJobSaved(job.id)}
+                  status={getJobStatus(job.id)}
                   onView={handleView}
                   onSave={handleSave}
                   onApply={handleApply}
+                  onStatusChange={handleStatusChange}
                   showScore={hasPreferences}
                 />
               ))}
@@ -256,6 +309,8 @@ export const Dashboard: React.FC = () => {
         onSave={handleSave}
         isSaved={selectedJob ? isJobSaved(selectedJob.id) : false}
       />
+
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
     </div>
   );
 };

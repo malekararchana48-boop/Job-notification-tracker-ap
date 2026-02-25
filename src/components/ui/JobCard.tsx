@@ -2,23 +2,29 @@ import React from 'react';
 import { Badge, Button } from './index';
 import type { JobWithScore } from '../../utils/matchScore';
 import { getScoreVariant, getScoreLabel } from '../../utils/matchScore';
+import type { JobStatus } from '../../utils/status';
+import { getStatusColor } from '../../utils/status';
 import './JobCard.css';
 
 interface JobCardProps {
   job: JobWithScore;
   isSaved: boolean;
+  status: JobStatus;
   onView: (job: JobWithScore) => void;
   onSave: (jobId: string) => void;
   onApply: (url: string) => void;
+  onStatusChange: (jobId: string, status: JobStatus) => void;
   showScore?: boolean;
 }
 
 export const JobCard: React.FC<JobCardProps> = ({
   job,
   isSaved,
+  status,
   onView,
   onSave,
   onApply,
+  onStatusChange,
   showScore = false,
 }) => {
   const formatPostedTime = (days: number): string => {
@@ -107,6 +113,24 @@ export const JobCard: React.FC<JobCardProps> = ({
           <Button variant="primary" size="sm" onClick={() => onApply(job.applyUrl)}>
             Apply
           </Button>
+        </div>
+      </div>
+
+      {/* Status Section */}
+      <div className="job-card__status-section">
+        <span className="job-card__status-label">Status:</span>
+        <div className="job-card__status-buttons">
+          {(['Not Applied', 'Applied', 'Rejected', 'Selected'] as JobStatus[]).map((s) => (
+            <button
+              key={s}
+              className={`job-card__status-btn ${
+                status === s ? `job-card__status-btn--active job-card__status-btn--${getStatusColor(s)}` : ''
+              }`}
+              onClick={() => onStatusChange(job.id, s)}
+            >
+              {s}
+            </button>
+          ))}
         </div>
       </div>
     </div>

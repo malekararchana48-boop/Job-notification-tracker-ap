@@ -8,6 +8,7 @@ export interface FilterState {
   experience: string;
   source: string;
   sort: string;
+  status: string;
 }
 
 interface FilterBarProps {
@@ -19,6 +20,7 @@ const locations = ['All', 'Bangalore', 'Hyderabad', 'Pune', 'Chennai', 'Gurgaon'
 const modes = ['All', 'Remote', 'Hybrid', 'Onsite'];
 const experiences = ['All', 'Fresher', '0-1', '1-3', '3-5'];
 const sources = ['All', 'LinkedIn', 'Naukri', 'Indeed'];
+const statuses = ['All', 'Not Applied', 'Applied', 'Rejected', 'Selected'];
 const sortOptions = [
   { value: 'latest', label: 'Latest First' },
   { value: 'oldest', label: 'Oldest First' },
@@ -43,6 +45,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
       experience: 'All',
       source: 'All',
       sort: 'latest',
+      status: 'All',
     });
   };
 
@@ -51,7 +54,8 @@ export const FilterBar: React.FC<FilterBarProps> = ({
     filters.location !== 'All' ||
     filters.mode !== 'All' ||
     filters.experience !== 'All' ||
-    filters.source !== 'All';
+    filters.source !== 'All' ||
+    filters.status !== 'All';
 
   return (
     <div className="filter-bar">
@@ -111,6 +115,18 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             {sources.map((source) => (
               <option key={source} value={source}>
                 {source === 'All' ? 'All Sources' : source}
+              </option>
+            ))}
+          </select>
+
+          <select
+            value={filters.status}
+            onChange={(e) => handleChange('status', e.target.value)}
+            className="filter-bar__select"
+          >
+            {statuses.map((status) => (
+              <option key={status} value={status}>
+                {status === 'All' ? 'All Statuses' : status}
               </option>
             ))}
           </select>

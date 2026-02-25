@@ -109,6 +109,75 @@
   gap: var(--space-8);
 }
 
+/* Status Section */
+.job-card__status-section {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  margin-top: var(--space-16);
+  padding-top: var(--space-16);
+  border-top: var(--border-width) solid var(--border-color);
+}
+
+.job-card__status-label {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.job-card__status-buttons {
+  display: flex;
+  gap: var(--space-8);
+  flex-wrap: wrap;
+}
+
+.job-card__status-btn {
+  padding: 6px var(--space-12);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  background-color: var(--color-background);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: inherit;
+}
+
+.job-card__status-btn:hover {
+  border-color: var(--color-text-muted);
+  color: var(--color-text-primary);
+}
+
+.job-card__status-btn--active {
+  font-weight: 500;
+}
+
+/* Status color variants */
+.job-card__status-btn--neutral {
+  background-color: var(--color-background);
+  border-color: var(--color-text-muted);
+  color: var(--color-text-secondary);
+}
+
+.job-card__status-btn--blue {
+  background-color: #e8f4fd;
+  border-color: #0ea5e9;
+  color: #0369a1;
+}
+
+.job-card__status-btn--red {
+  background-color: #fef2f2;
+  border-color: #ef4444;
+  color: #dc2626;
+}
+
+.job-card__status-btn--green {
+  background-color: #f0fdf4;
+  border-color: #22c55e;
+  color: #16a34a;
+}
+
 @media (max-width: 640px) {
   .job-card__details {
     grid-template-columns: 1fr;
@@ -122,5 +191,19 @@
 
   .job-card__actions {
     justify-content: stretch;
+  }
+
+  .job-card__status-section {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .job-card__status-buttons {
+    width: 100%;
+  }
+
+  .job-card__status-btn {
+    flex: 1;
+    min-width: 80px;
   }
 }
